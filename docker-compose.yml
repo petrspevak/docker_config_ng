@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: ./docker/php/Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mysql
+    environment:
+      - APP_ENV=dev
+      - APP_SECRET=3bc1e76609756e82a2e3637e8ec756ee
+      - DATABASE_URL=
+      - DATABASE_HOST=mysql
+      - DATABASE_PORT=3306
+      - DATABASE_NAME=database
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=root
+      - MAILER_URL=null://localhost
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: database
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
