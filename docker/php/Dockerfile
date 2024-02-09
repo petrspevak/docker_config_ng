@@ -18,6 +18,7 @@ RUN apt-get update && \
         libfreetype6-dev \
         libpng-dev \
         libjpeg-dev \
+        libjpeg62-turbo-dev \
         libicu-dev  \
         libonig-dev \
         libxml2-dev \
@@ -26,7 +27,8 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl \
-    && docker-php-ext-install pdo pdo_mysql zip xsl gd opcache exif mbstring soap
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql mysqli zip xsl gd opcache exif mbstring soap
 
 # Enable Apache modules
 RUN a2enmod rewrite headers
