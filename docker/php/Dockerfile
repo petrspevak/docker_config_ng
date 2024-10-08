@@ -51,7 +51,7 @@ USER www-data
 # Install NVM for current user (www-data) and install Node.js with gulp-cli
 SHELL ["/bin/bash", "--login", "-c"]
 RUN touch ~/.bashrc
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 RUN source ~/.bashrc && \
     nvm install 14 && \
     npm install -g gulp-cli
