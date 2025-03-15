@@ -23,6 +23,8 @@ services:
       - MAILER_URL=null://localhost
   mysql:
     image: mysql:8.0
+    volumes:
+      - mysql-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: database
@@ -41,3 +43,5 @@ services:
       PMA_HOST: mysql
       MYSQL_ROOT_PASSWORD: root
       UPLOAD_LIMIT: 1G
+volumes:
+  mysql-data:

@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.4-apache
 
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
@@ -19,6 +19,7 @@ RUN apt-get update && \
         libpng-dev \
         libjpeg-dev \
         libjpeg62-turbo-dev \
+        libwebp-dev \
         libicu-dev  \
         libonig-dev \
         libxml2-dev \
@@ -27,7 +28,7 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install pdo pdo_mysql mysqli zip xsl gd opcache exif mbstring soap
 
 # Enable Apache modules
