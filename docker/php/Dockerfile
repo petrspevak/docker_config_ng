@@ -20,6 +20,7 @@ RUN apt-get update && \
         libjpeg-dev \
         libjpeg62-turbo-dev \
         libwebp-dev \
+        libavif-dev \
         libicu-dev  \
         libonig-dev \
         libxml2-dev \
@@ -28,7 +29,7 @@ RUN apt-get update && \
     && rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-configure intl \
     && docker-php-ext-install intl \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp --with-avif \
     && docker-php-ext-install pdo pdo_mysql mysqli zip xsl gd opcache exif mbstring soap
 
 # Enable Apache modules
