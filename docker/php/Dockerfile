@@ -1,5 +1,9 @@
 FROM php:8.4-apache
 
+# Accept build arguments for user ID and group ID
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 COPY ./docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
@@ -40,17 +44,15 @@ ENV APACHE_DOCUMENT_ROOT /var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Change user id to fit host machine user
-RUN usermod --non-unique --uid 1000 www-data \
-  && groupmod --non-unique --gid 1000 www-data \
-  && chown -R 1000:1000 /var/www
+# Create user and group with dynamic IDs, handle case where user/group might already exist
+RUN groupmod --non-unique --gid ${GROUP_ID} www-data || true && \
+    usermod --non-unique --uid ${USER_ID} --gid ${GROUP_ID} www-data || true && \
+    chown -R ${USER_ID}:${GROUP_ID} /var/www
 
 USER www-data
 
-# Install NVM for current user (www-data) and install Node.js with gulp-cli
 SHELL ["/bin/bash", "--login", "-c"]
 RUN touch ~/.bashrc
 RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
