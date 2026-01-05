@@ -6,6 +6,10 @@ ARG GROUP_ID=1000
 
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
+# Set timezone
+ENV TZ=Europe/Prague
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 COPY ./docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
 
 # Install dependencies

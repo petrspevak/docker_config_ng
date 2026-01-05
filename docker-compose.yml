@@ -1,27 +1,8 @@
 # Docker Compose configuration for a Symfony project with NG specifics
 # Author: Petr Spěvák <petr@spevak.eu>
 # Boilerplate repository: https://github.com/petrspevak/docker_config_ng
-
-# Centralized configuration constants
-x-config:
-  # Database
-  db_host: &db_host mysql
-  db_port: &db_port 3306
-  db_name: &db_name database
-  db_user: &db_user user
-  db_password: &db_password password
-  db_root_password: &db_root_password password
-  
-  # phpMyAdmin
-  upload_limit: &upload_limit 1G
-  
-  # Port mappings
-  app-ports: &app-ports
-    - "8080:80"
-  mysql-ports: &mysql-ports
-    - "3306:3306"
-  phpmyadmin-ports: &phpmyadmin-ports
-    - "8090:80"
+#
+# Configuration is centralized in .env file (copy .env.example to .env)
 
 services:
   app:
@@ -32,43 +13,49 @@ services:
       args:
         USER_ID: ${UID:-1000}
         GROUP_ID: ${GID:-1000}
-    ports: *app-ports
+    ports:
+      - "${DOCKER_APP_PORT}:80"
     volumes:
       - .:/var/www/html
     depends_on:
       - mysql
     environment:
+      TZ: ${TZ}
       APP_ENV: dev
       APP_SECRET: 3bc1e76609756e82a2e3637e8ec756ee
-      DATABASE_URL: ""
-      DATABASE_HOST: *db_host
-      DATABASE_PORT: *db_port
-      DATABASE_NAME: *db_name
-      DATABASE_USER: *db_user
-      DATABASE_PASSWORD: *db_password
-      MAILER_URL: "null://localhost"
+      DATABASE_URL:
+      DATABASE_HOST: ${DOCKER_DATABASE_HOST}
+      DATABASE_PORT: ${DOCKER_MYSQL_PORT}
+      DATABASE_NAME: ${DOCKER_DATABASE_NAME}
+      DATABASE_USER: ${DOCKER_DATABASE_USER}
+      DATABASE_PASSWORD: ${DOCKER_DATABASE_PASSWORD}
+      MAILER_URL: null://localhost
 
   mysql:
     image: mysql:8.0
     volumes:
       - mysql-data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: *db_root_password
-      MYSQL_DATABASE: *db_name
-      MYSQL_USER: *db_user
-      MYSQL_PASSWORD: *db_password
-    ports: *mysql-ports
+      TZ: ${TZ}
+      MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DOCKER_DATABASE_NAME}
+      MYSQL_USER: ${DOCKER_DATABASE_USER}
+      MYSQL_PASSWORD: ${DOCKER_DATABASE_PASSWORD}
+    ports:
+      - "${DOCKER_MYSQL_PORT}:3306"
     restart: unless-stopped
 
   phpmyadmin:
     depends_on:
       - mysql
     image: phpmyadmin
-    ports: *phpmyadmin-ports
+    ports:
+      - "${DOCKER_PHPMYADMIN_PORT}:80"
     environment:
-      PMA_HOST: *db_host
-      MYSQL_ROOT_PASSWORD: *db_root_password
-      UPLOAD_LIMIT: *upload_limit
+      TZ: ${TZ}
+      PMA_HOST: ${DOCKER_DATABASE_HOST}
+      MYSQL_ROOT_PASSWORD: ${DOCKER_MYSQL_ROOT_PASSWORD}
+      UPLOAD_LIMIT: 1G
 
 volumes:
   mysql-data:
